@@ -1,14 +1,15 @@
-import configparser
-import os
 import requests
+
 from database_services.database_objects.item import Item
+from get_config import get_config
 
 
 def get_item_runescape_url():
-    file = open(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0] + os.sep + 'general.config')
-    config = configparser.ConfigParser()
-    config.read_file(file)
-    return config['DEFAULT']['ItemRunescapeUrl']
+    config = get_config()
+    print(list(config.sections()))
+    print(list(config.keys()))
+    print(list(config['DEFAULT'].keys()))
+    return config['DEFAULT']['ItemRunescapeBaseUrl']
 
 
 def get_item_from_id(id: int) -> str:

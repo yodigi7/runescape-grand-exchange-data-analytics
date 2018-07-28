@@ -7,4 +7,4 @@ def get_id_from_name(name: str) -> int:
     :type name: string
     :rtype: int
     """
-    
+
