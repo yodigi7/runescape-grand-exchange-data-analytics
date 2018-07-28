@@ -1,10 +1,10 @@
-#Runescape Grand Exchange for Data Analytics
+# Runescape Grand Exchange for Data Analytics
 
 This project is for collecting and storing the data for items in the Runescape Grand Exchange.
 
-##Getting Started
+## Getting Started
 
-###Prerequisites
+### Prerequisites
 
 You will need to install the following in order to use this project:
 
@@ -14,26 +14,26 @@ sqlite3
 sqlalchemy
 ```
 
-###Installing
+### Installing
 
 TODO
 
-##Running the tests
+## Running the tests
 
 TODO
 
-##Deployment
+## Deployment
 
 TODO
 
-##Authors
+## Authors
 
 Anthony Buchholz -
 
-##License
+## License
 
 TODO
 
-##Acknowledgements
+## Acknowledgements
 
 TODO
