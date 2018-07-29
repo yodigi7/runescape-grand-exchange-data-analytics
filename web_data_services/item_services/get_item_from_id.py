@@ -11,7 +11,8 @@ def get_item_runescape_url():
 
 
 def get_item_from_id(id: int) -> Item:
-    logger = py_logging.create_logger('get_item_runescape_url', '{}get_item_runescape_url.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    logger = py_logging.create_logger('get_item_runescape_url', '{}get_item_runescape_url.log'
+                                      .format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     response = requests.get('{}{}'.format(get_item_runescape_url(), id)).json()
     name = response['item']['name']
     type = response['item']['type']

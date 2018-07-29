@@ -1,11 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
-import configparser
-import os
+from sqlalchemy.orm import Session, relationship
 
-Base = declarative_base()
+from database_services.database.base import Base
 
 
 class Item(Base):
@@ -15,6 +11,8 @@ class Item(Base):
     name = Column(String(100))
     type = Column(String(100))
     description = Column(String(1000))
+
+    prices = relationship("Price", back_populates="item")
 
     def get_from_database(self, session) -> Session:
         return session.query(Item).filter_by(item_id=self.item_id).first()
@@ -40,26 +38,5 @@ class Item(Base):
             .format(self.item_id, self.name, self.type, self.description)
 
 
-def create_table():
-    file = open(os.path.split(os.path.split(os.path.dirname(__file__))[0])[0] + os.sep +'general.config')
-    config = configparser.ConfigParser()
-    config.read_file(file)
-    engine = create_engine('{}:///../database/{}'.format(config['DEFAULT']['DatabaseType'], config['DEFAULT']['DatabaseName']))
-    file.close()
-    Base.metadata.create_all(engine)
-
-
 if __name__ == '__main__':
-    # Session = sessionmaker()
-    # engine = create_engine('sqlite:///../database/runescape-grand-exchange-data.db')
-    # session = Session(bind=engine)
-    #
-    # fire_rune_item = Item(item_id=554,
-    #                       name="Fire rune",
-    #                       type="Runes, Spells and Teleports",
-    #                       description="One of the four basic elemental runes. Used in Magic (13).")
-    #
-    # fire_rune_item.add_to_database(session)
-    # print(fire_rune_item.get_from_database(session).item_id)
-    # fire_rune_item.delete_in_database(session)
-    create_table()
+    pass
