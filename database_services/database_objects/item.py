@@ -1,10 +1,12 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy import Column, Integer, String, Boolean, create_engine
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 from database_services.database.base import Base
 
 import threading
 import time
+
+from get_config import get_config
 
 
 class Item(Base):
@@ -34,10 +36,18 @@ class Item(Base):
         session.add(self)
         session.commit()
 
-    def add_to_database_thread(self, session: Session, lock: threading.Lock) -> None:
+    def add_to_database_thread(self, lock: threading.Lock) -> None:
+        print(threading.get_ident())
+        config = get_config()
+        engine = create_engine(
+            '{}:///{}{}'.format(
+                config['DEFAULT']['DatabaseType'], "C:\\Anthony\\Programs\\runescape-grand-exchange-data-analytics\\database_services\\database\\", config['DEFAULT']['DatabaseName']))
+        Session = sessionmaker(bind=engine)
         with lock:
+            session = Session()
             session.add(self)
             session.commit()
+            session.close()
 
     def delete_in_database_thread(self, session: Session, lock: threading.Lock) -> None:
         with lock:
@@ -54,7 +64,7 @@ class Item(Base):
         return self.__repr__()
 
     def __repr__(self):
-        return 'Item(item_id = {}, name="{}", type="{}", is_members_only={} description="{}")' \
+        return 'Item(item_id = {}, name="{}", type="{}", is_members_only={}, description="{}")' \
             .format(self.item_id, self.name, self.type, self.is_members_only, self.description)
 
 

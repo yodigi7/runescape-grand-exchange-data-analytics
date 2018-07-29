@@ -20,6 +20,11 @@ def get_top_price_value_names() -> list:
     return get_top_price(config['DEFAULT']['TopPriceValuesUrl'])
 
 
+def get_top_price_most_traded_names() -> list:
+    config = get_config()
+    return get_top_price(config['DEFAULT']['TopPriceMostTradedUrl'])
+
+
 def get_top_price(url: str) -> list:
     list_of_ids = []
     html_text = requests.get(url).text

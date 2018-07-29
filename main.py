@@ -1,4 +1,5 @@
 import sqlite3
+import threading
 
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -7,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from database_services.database_objects.item import Item
 from database_services.database_objects.price import Price
 from get_config import get_config
+from web_data_services.item_services.add_all_top_price_items import add_all_top_price_items_thread, func
 from web_data_services.item_services.get_id_from_name import get_id_from_name
 from web_data_services.item_services.get_item_from_id import get_item_from_id
 
@@ -34,13 +36,4 @@ def get_names_to_add_to_database():
 
 
 if __name__ == '__main__':
-    config = get_config()
-    engine = create_engine(':///database_services\\database\\'.join([config['DEFAULT']['DatabaseType'], config['DEFAULT']['DatabaseName']]))
-    Session = sessionmaker()
-    session = Session(bind=engine)
-    item = Item(item_id=1, name="name", description="description", type="type")
-    item = item.get_from_database(session)
-    price = Price(item_id=1, runescape_time=12378)
-    price = price.get_from_database(session)
-    print(item.prices)
-    print(price.item)
+    func()

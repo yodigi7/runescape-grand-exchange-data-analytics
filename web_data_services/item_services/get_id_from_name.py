@@ -7,7 +7,8 @@ import os
 
 
 def get_id_from_name(name: str, setting: str = 'DEFAULT') -> int:
-    logger = py_logging.create_logger('get_id_from_name', '{}get_id_from_name.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    logger = py_logging.create_logger(
+        'get_id_from_name', '{}get_id_from_name.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     config = get_config()
 
     html_text = requests.get(
@@ -29,7 +30,7 @@ def get_id_from_name(name: str, setting: str = 'DEFAULT') -> int:
                 if holder.getText().lower() == name.lower():
                     return possible_result.getText()
 
-    raise RuntimeError("Wasn't able to find the id for: {}".format(name))
+    return None
 
 
 if __name__ == '__main__':
