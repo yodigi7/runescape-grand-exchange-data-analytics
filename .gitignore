@@ -1,3 +1,5 @@
 .idea
 vcs.xml
 *.log
+*.txt
+*.db

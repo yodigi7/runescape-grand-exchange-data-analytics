@@ -13,7 +13,7 @@ class Price(Base):
 
     item = relationship("Item", back_populates="prices")
 
-    def get_from_database(self, session) -> Session:
+    def get_from_database(self, session):
         return session.query(Price).filter_by(item_id=self.item_id).first()
 
     def add_to_database(self, session) -> None:
@@ -33,8 +33,8 @@ class Price(Base):
         return self.__repr__()
 
     def __repr__(self):
-        return 'Price(item_id = {}, name="{}", type="{}", description="{}")' \
-            .format(self.item_id, self.name, self.type, self.description)
+        return 'Price(item_id = {}, runescape_time={}, price={})' \
+            .format(self.item_id, self.runescape_time, self.price)
 
 
 if __name__ == '__main__':

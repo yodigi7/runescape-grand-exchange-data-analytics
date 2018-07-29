@@ -15,9 +15,6 @@ from web_data_services.item_services.get_item_from_id import get_item_from_id
 # This is just to mess around and to make sure that everything works
 
 
-Session = sessionmaker()
-
-
 def get_names_to_add_to_database():
     Session = sessionmaker()
     engine = create_engine('sqlite:///database_services/database/runescape-grand-exchange-data.db')
@@ -39,7 +36,11 @@ def get_names_to_add_to_database():
 if __name__ == '__main__':
     config = get_config()
     engine = create_engine(':///database_services\\database\\'.join([config['DEFAULT']['DatabaseType'], config['DEFAULT']['DatabaseName']]))
-    Session = sessionmaker(Session)
+    Session = sessionmaker()
     session = Session(bind=engine)
-    Item(item_id=5797, name="name", description="description", type="type").add_to_database(session)
-    # Price(item_id=5797, runescape_time=12378).add_to_database(session)
+    item = Item(item_id=1, name="name", description="description", type="type")
+    item = item.get_from_database(session)
+    price = Price(item_id=1, runescape_time=12378)
+    price = price.get_from_database(session)
+    print(item.prices)
+    print(price.item)
