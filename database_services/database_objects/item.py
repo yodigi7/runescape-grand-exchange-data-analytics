@@ -1,12 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean, create_engine
-from sqlalchemy.orm import Session, relationship, sessionmaker
+import threading
+
+from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 
 from database_services.database.base import Base
-
-import threading
-import time
-
-from get_config import get_config
+from database_services.session_controller import shared_session
 
 
 class Item(Base):
@@ -20,42 +18,62 @@ class Item(Base):
 
     prices = relationship("Price", back_populates="item")
 
-    def get_from_database(self, session: Session):
+    def get_from_database(self, lock: threading.Lock = None):
+        session = shared_session()
+        if lock is not None:
+            with lock:
+                return session.query(Item).filter_by(item_id=self.item_id).first()
         return session.query(Item).filter_by(item_id=self.item_id).first()
 
-    def add_to_database(self, session: Session) -> None:
-        session.add(self)
-        session.commit()
+    def add_to_database(self, lock: threading.Lock = None) -> None:
+        session = shared_session()
+        if lock is not None:
+            with lock:
+                session.add(self)
+                session.commit()
+        else:
+            session.add(self)
+            session.commit()
 
-    def delete_in_database(self, session: Session) -> None:
-        session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
-        session.commit()
+    def delete_in_database(self, lock: threading.Lock = None) -> None:
+        session = shared_session()
+        if lock is not None:
+            with lock:
+                session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
+                session.commit()
+        else:
+            session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
+            session.commit()
 
-    def update_in_database(self, session: Session) -> None:
-        session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
-        session.add(self)
-        session.commit()
+    def update_in_database(self, lock: threading.Lock = None) -> None:
+        session = shared_session()
+        if lock is not None:
+            with lock:
+                session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
+                session.add(self)
+                session.commit()
+        else:
+            session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
+            session.add(self)
+            session.commit()
 
     def add_to_database_thread(self, lock: threading.Lock) -> None:
-        print(threading.get_ident())
-        config = get_config()
-        engine = create_engine(
-            '{}:///{}{}'.format(
-                config['DEFAULT']['DatabaseType'], "C:\\Anthony\\Programs\\runescape-grand-exchange-data-analytics\\database_services\\database\\", config['DEFAULT']['DatabaseName']))
-        Session = sessionmaker(bind=engine)
+        # print(threading.get_ident())
         with lock:
-            session = Session()
+            session = shared_session()
             session.add(self)
             session.commit()
             session.close()
 
-    def delete_in_database_thread(self, session: Session, lock: threading.Lock) -> None:
+    def delete_in_database_thread(self, lock: threading.Lock) -> None:
         with lock:
+            session = shared_session()
             session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
             session.commit()
 
-    def update_in_database_thread(self, session: Session, lock: threading.Lock) -> None:
+    def update_in_database_thread(self, lock: threading.Lock) -> None:
         with lock:
+            session = shared_session()
             session.delete(session.query(Item).filter_by(item_id=self.item_id).first())
             session.add(self)
             session.commit()

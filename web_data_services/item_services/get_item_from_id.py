@@ -31,7 +31,7 @@ def get_item_from_id(id: int, lock: threading.Lock = None) -> Item:
     return Item(item_id=id, name=name, type=type, is_members_only=is_members_only, description=description)
 
 
-def get_item_from_id_thread(id: int, item: Item, get_lock: threading.Lock, delay=5) -> Item:
+def get_item_from_id_thread(id: int, item: Item, get_lock: threading.Lock, delay: int = 5, second_delay: int = 300) -> Item:
     logger = py_logging.create_logger('get_item_from_id', '{}get_item__from_id.log'
                                       .format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     with get_lock:
@@ -39,9 +39,16 @@ def get_item_from_id_thread(id: int, item: Item, get_lock: threading.Lock, delay
             response = requests.get(''.join([get_item_runescape_url(), str(id)])).json()
             time.sleep(delay)
         except JSONDecodeError:
-            time.sleep(300)
-            response = requests.get(''.join([get_item_runescape_url(), str(id)])).json()
-            time.sleep(delay)
+            logger.warning("{} failed due to either too many requests or a bad id".format(id))
+            print("{} failed due to either too many requests or a bad id".format(id))
+            time.sleep(second_delay)
+            try:
+                response = requests.get(''.join([get_item_runescape_url(), str(id)])).json()
+                time.sleep(delay)
+            except JSONDecodeError:
+                logger.error("{} failed likely due to bad id".format(id))
+                print("{} failed likely due to bad id".format(id))
+                return None
     name = response['item']['name']
     type = response['item']['type']
     description = response['item']['description']

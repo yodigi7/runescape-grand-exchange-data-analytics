@@ -16,7 +16,7 @@ def get_id_from_name(name: str, setting: str = 'DEFAULT') -> int:
         urllib.parse.quote_plus(name)).text
     logger.info("Sent request off to find the id for: {}".format(name))
 
-    soup = BeautifulSoup(html_text, 'html.parser')
+    soup = BeautifulSoup(html_text, 'lxml')
 
     possible_results = soup.find('table', {"class": "table"}) \
                            .find_all('tr')

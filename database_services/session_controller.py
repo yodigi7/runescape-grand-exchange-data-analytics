@@ -9,5 +9,5 @@ config = get_config()
 engine = create_engine(
     '{}:///{}{}'.format(
         config['DEFAULT']['DatabaseType'], "C:\\Anthony\\Programs\\runescape-grand-exchange-data-analytics\\database_services\\database\\", config['DEFAULT']['DatabaseName']))
-session = sessionmaker(bind=engine)
+shared_session = sessionmaker(bind=engine)
 
