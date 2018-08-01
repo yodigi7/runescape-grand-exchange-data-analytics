@@ -30,14 +30,13 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
     with runescape_lock:
         print("Got lock")
         response = requests.get("http://services.runescape.com/m=itemdb_rs/api/graph/{}.json".format(item_id))
-        print("Response: {}".format(response.text))
         if "You've made too many requests recently." in response.text or len(response.text) is 0:
             print("Too many requests")
-            time.sleep(30)
+            time.sleep(120)
             json_response = requests.get("http://services.runescape.com/m=itemdb_rs/api/graph/{}.json".format(item_id)).json()
         else:
             json_response = response.json()
-        # time.sleep(5)
+        time.sleep(5)
     print("Starting to parse the data for {}".format(item_id))
     list_of_days = list(json_response['daily'].keys())
     new_days = determine_new_days(item_id, list_of_days, session_lock)
@@ -54,7 +53,3 @@ def get_all_historic_prices(session_lock: multiprocessing.Lock, runescape_lock: 
 
 if __name__ == '__main__':
     processes = get_all_historic_prices(multiprocessing.Lock(), multiprocessing.Lock())
-    num_proc_running = get_number_of_processors_running(processes)
-    while num_proc_running > 1:
-        print(num_proc_running)
-        num_proc_running = get_number_of_processors_running(processes)

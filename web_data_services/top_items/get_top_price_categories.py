@@ -26,13 +26,10 @@ def get_top_price_most_traded_names() -> list:
 
 
 def get_top_price(url: str) -> list:
-    list_of_ids = []
     html_text = requests.get(url).text
-
     soup = BeautifulSoup(html_text, 'lxml')
     rows = soup.find('table').find('tbody').find_all('tr')
-    for row in rows:
-        list_of_ids.append(row.find('td').find('a').find('span').getText())
+    list_of_ids = [row.find('td').find('a').find('img', title=True)['title'] for row in rows]
     return list_of_ids
 
 

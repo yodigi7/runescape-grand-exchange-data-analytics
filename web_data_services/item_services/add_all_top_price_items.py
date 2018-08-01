@@ -34,7 +34,7 @@ def add_all_top_price_items():
     return processes
 
 
-def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, get_lock: multiprocessing.Lock = None):
+def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, runescape_lock: multiprocessing.Lock = None):
     # print(threading.get_ident())
     logger = py_logging.create_logger(
         'add_all_top_price_items_thread', '{}add_all_top_price_items.log'
@@ -42,8 +42,8 @@ def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, get_lock:
     processes = []
     names = get_top_price_fall_names() + get_top_price_rise_names() + get_top_price_value_names() + get_top_price_most_traded_names()
     print(names)
-    if not get_lock:
-        get_lock = multiprocessing.Lock()
+    if not runescape_lock:
+        runescape_lock = multiprocessing.Lock()
 
     for name in names:
         print(name)
@@ -57,7 +57,7 @@ def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, get_lock:
             print("Couldn't find ID for: {}".format(name))
             continue
         print("ID: {}".format(id))
-        process = multiprocessing.Process(target=add_item_to_database_by_id_thread, args=(id, session_lock, get_lock))
+        process = multiprocessing.Process(target=add_item_to_database_by_id_thread, args=(id, session_lock, runescape_lock))
         process.start()
         processes.append(process)
 
@@ -66,6 +66,4 @@ def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, get_lock:
 
 
 if __name__ == '__main__':
-    lock = multiprocessing.Lock()
-    process = multiprocessing.Process(target=add_all_top_price_items_thread, args=(lock,))
-    process.start()
+    multiprocessing.Process(target=add_all_top_price_items_thread, args=((multiprocessing.Lock()),)).start()
