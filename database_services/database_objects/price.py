@@ -7,11 +7,12 @@ from database_services.session_controller import shared_session
 
 
 def add_all_to_database(list_of_prices: list, lock: multiprocessing.Lock) -> None:
-    with lock:
-        session = shared_session()
-        session.add_all(list_of_prices)
-        session.commit()
-        session.close()
+    if list_of_prices:
+        with lock:
+            session = shared_session()
+            session.add_all(list_of_prices)
+            session.commit()
+            session.close()
 
 
 class Price(Base):
