@@ -47,8 +47,7 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
 
 
 def get_all_historic_prices(session_lock: multiprocessing.Lock, runescape_lock: multiprocessing.Lock) -> list:
-    ids = get_ids_in_database(session_lock)
-    return get_historic_prices(ids, session_lock, runescape_lock)
+    return get_historic_prices(get_ids_in_database(session_lock), session_lock, runescape_lock)
 
 
 if __name__ == '__main__':

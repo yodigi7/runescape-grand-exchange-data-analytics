@@ -1,6 +1,6 @@
 import os
-import threading
 
+import multiprocessing
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -12,7 +12,7 @@ from database_services.database_objects.price import Price
 from get_config import get_config
 
 
-def is_item_in_database(item: Item, session_lock: threading.Lock) -> bool:
+def is_item_in_database(item: Item, session_lock: multiprocessing.Lock) -> bool:
     logger = py_logging.create_logger(
         "item_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     with session_lock:
@@ -23,7 +23,7 @@ def is_item_in_database(item: Item, session_lock: threading.Lock) -> bool:
     return is_in_database
 
 
-def is_item_id_in_database(item_id: int, session_lock: threading.Lock) -> bool:
+def is_item_id_in_database(item_id: int, session_lock: multiprocessing.Lock) -> bool:
     logger = py_logging.create_logger(
         "is_item_id_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     with session_lock:
@@ -34,7 +34,7 @@ def is_item_id_in_database(item_id: int, session_lock: threading.Lock) -> bool:
     return bool(count)
 
 
-def is_item_name_in_database(name: str, session_lock: threading.Lock) -> bool:
+def is_item_name_in_database(name: str, session_lock: multiprocessing.Lock) -> bool:
     config = get_config()
     engine = create_engine(
         '{}:///{}{}'.format(
@@ -53,9 +53,28 @@ def is_item_name_in_database(name: str, session_lock: threading.Lock) -> bool:
     return bool(count)
 
 
-def get_ids_in_database(session_lock: threading.Lock) -> list:
+def get_ids_in_database(session_lock: multiprocessing.Lock) -> list:
     logger = py_logging.create_logger(
         "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     with session_lock:
         session = shared_session()
         return [x[0] for x in session.query(Item.item_id).distinct()]
+
+
+def get_days_in_database(item_id: int, session_lock: multiprocessing.Lock) -> list:
+    logger = py_logging.create_logger(
+        "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    with session_lock:
+        session = shared_session()
+        return [x[0] for x in session.query(Price.runescape_time).filter(Price.item_id == item_id).distinct()]
+
+
+def determine_new_days(item_id: int, days: list, session_lock: multiprocessing.Lock) -> list:
+    logger = py_logging.create_logger(
+        "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    days_in_database = get_days_in_database(item_id, session_lock)
+    return [x for x in days if x not in days_in_database]
+
+
+if __name__ == '__main__':
+    pass
