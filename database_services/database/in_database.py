@@ -25,7 +25,7 @@ def is_item_in_database(item: Item, session_lock: threading.Lock) -> bool:
 
 def is_item_id_in_database(item_id: int, session_lock: threading.Lock) -> bool:
     logger = py_logging.create_logger(
-        "item_id_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+        "is_item_id_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     with session_lock:
         session = shared_session()
         count = session.query(Item).filter(Item.item_id == item_id).count()
@@ -51,3 +51,11 @@ def is_item_name_in_database(name: str, session_lock: threading.Lock) -> bool:
         session.close()
     logger.debug("Number of {} in database: {}".format(name, count))
     return bool(count)
+
+
+def get_ids_in_database(session_lock: threading.Lock) -> list:
+    logger = py_logging.create_logger(
+        "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    with session_lock:
+        session = shared_session()
+        return [x[0] for x in session.query(Item.item_id).distinct()]

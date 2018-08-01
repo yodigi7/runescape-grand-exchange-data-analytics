@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database_services.add_item_to_database_by_id import add_item_to_database_by_id_thread
-from database_services.database.in_database import is_item_id_in_database, is_item_name_in_database
+from database_services.database.in_database import is_item_name_in_database
 from database_services.session_controller import shared_session
 from web_data_services.top_items.get_top_price_categories import *
 from web_data_services.item_services.get_item_from_id import *
@@ -65,17 +65,7 @@ def add_all_top_price_items_thread(session_lock: multiprocessing.Lock, get_lock:
         process.join()
 
 
-def func():
-    # print(threading.get_ident())
-    lock = multiprocessing.Lock()
-    # add_all_top_price_items_thread(lock)
-    process = multiprocessing.Process(target=add_all_top_price_items_thread, args=(lock,))
-    process.start()
-
-
 if __name__ == '__main__':
     lock = multiprocessing.Lock()
-    # add_all_top_price_items_thread(lock)
     process = multiprocessing.Process(target=add_all_top_price_items_thread, args=(lock,))
     process.start()
-    # process.join()
