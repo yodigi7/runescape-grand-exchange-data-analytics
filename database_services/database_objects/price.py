@@ -6,6 +6,14 @@ from database_services.database.base import Base
 from database_services.session_controller import shared_session
 
 
+def add_all_to_database(list_of_prices: list, lock: multiprocessing.Lock) -> None:
+    with lock:
+        session = shared_session()
+        session.add_all(list_of_prices)
+        session.commit()
+        session.close()
+
+
 class Price(Base):
     __tablename__ = 'prices'
 
@@ -25,12 +33,14 @@ class Price(Base):
             session = shared_session()
             session.add(self)
             session.commit()
+            session.close()
 
     def delete_in_database(self, lock: multiprocessing.Lock) -> None:
         with lock:
             session = shared_session()
             session.delete(session.query(Price).filter_by(item_id=self.item_id).first())
             session.commit()
+            session.close()
 
     def update_in_database(self, lock: multiprocessing.Lock) -> None:
         with lock:
@@ -38,6 +48,7 @@ class Price(Base):
             session.delete(session.query(Price).filter_by(item_id=self.item_id).first())
             session.add(self)
             session.commit()
+            session.close()
 
     def __str__(self):
         return self.__repr__()
