@@ -29,17 +29,17 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
     with runescape_lock:
         # print("Got lock")
         response = requests.get("http://services.runescape.com/m=itemdb_rs/api/graph/{}.json".format(item_id))
-        if "You've made too many requests recently." in response.text or len(response.text) is 0:
+        if len(response.text) is 0:
             print("Too many requests")
             time.sleep(60)
             json_response = requests.get("http://services.runescape.com/m=itemdb_rs/api/graph/{}.json".format(item_id)).json()
         else:
             json_response = response.json()
-        time.sleep(5)
+        # time.sleep(5)
     print("Starting to parse the data for {}".format(item_id))
     list_of_days = list(json_response['daily'].keys())
     new_days = determine_new_days(item_id, list_of_days, session_lock)
-    updated_dict = dict((key, value) for (key, value) in json_response['daily'].items() if int(key) in new_days)
+    updated_dict = dict((key, value) for key, value in json_response['daily'].items() if int(key) in new_days)
     list_of_prices = [Price(item_id=item_id, runescape_time=int(key), price=value) for key, value in updated_dict]
     add_all_to_database(list_of_prices, session_lock)
 
