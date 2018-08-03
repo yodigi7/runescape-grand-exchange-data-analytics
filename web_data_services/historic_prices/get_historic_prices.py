@@ -15,14 +15,15 @@ from get_processors import get_number_of_processors_running
 
 
 def get_historic_prices(item_ids: list, session_lock: multiprocessing.Lock, runescape_lock: multiprocessing.Lock) -> list:
-    processes = []
-    for item_id in item_ids:
-        while get_number_of_processors_running(processes) >= multiprocessing.cpu_count():
+    list_of_processes = []
+    for item_id in reversed(item_ids):
+        while get_number_of_processors_running(list_of_processes) >= multiprocessing.cpu_count():
             time.sleep(1)
-        process = multiprocessing.Process(target=get_historic_prices_one_id, args=(item_id, session_lock, runescape_lock))
+        process = multiprocessing.Process(
+            target=get_historic_prices_one_id, args=(item_id, session_lock, runescape_lock))
         process.start()
-        processes.append(process)
-    return processes
+        list_of_processes.append(process)
+    return list_of_processes
 
 
 def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock, runescape_lock: multiprocessing.Lock):

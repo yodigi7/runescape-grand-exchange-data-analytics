@@ -1,7 +1,7 @@
 import os
 
 import multiprocessing
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 
 import py_logging
@@ -51,6 +51,15 @@ def is_item_name_in_database(name: str, session_lock: multiprocessing.Lock) -> b
         session.close()
     logger.debug("Number of {} in database: {}".format(name, count))
     return bool(count)
+
+
+def get_singular_ids_in_database(session_lock: multiprocessing.Lock) -> list:
+    logger = py_logging.create_logger(
+        "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
+    with session_lock:
+        session = shared_session()
+        return [x for x in session.query(Item).filter(
+            and_(Item.name is None, Item.type is None, Item.is_members_only is None, Item.description is None))]
 
 
 def get_ids_in_database(session_lock: multiprocessing.Lock) -> list:

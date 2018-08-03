@@ -5,6 +5,7 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from clean_singular_items import clean_singular_items
 from database_services.database_objects.item import Item
 from database_services.database_objects.price import Price
 from get_config import get_config
@@ -40,4 +41,5 @@ if __name__ == '__main__':
     session_lock = multiprocessing.Lock()
     runescape_lock = multiprocessing.Lock()
     add_all_top_price_items_thread(session_lock, runescape_lock)
+    clean_singular_items(session_lock)
     get_all_historic_prices(session_lock, runescape_lock)
