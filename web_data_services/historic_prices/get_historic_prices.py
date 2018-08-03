@@ -16,7 +16,7 @@ from get_processors import get_number_of_processors_running
 
 def get_historic_prices(item_ids: list, session_lock: multiprocessing.Lock, runescape_lock: multiprocessing.Lock) -> list:
     list_of_processes = []
-    for item_id in reversed(item_ids):
+    for item_id in item_ids:
         while get_number_of_processors_running(list_of_processes) >= multiprocessing.cpu_count():
             time.sleep(1)
         process = multiprocessing.Process(

@@ -78,6 +78,13 @@ def get_days_in_database(item_id: int, session_lock: multiprocessing.Lock) -> li
         return [x[0] for x in session.query(Price.runescape_time).filter(Price.item_id == item_id).distinct()]
 
 
+def get_days_for_item(item_id: int, session_lock: multiprocessing.Lock) -> list:
+    with session_lock:
+        session = shared_session()
+        return [x for x in session.query(Price.runescape_time, Price.price)
+                .filter(Price.item_id == item_id).distinct()]
+
+
 def determine_new_days(item_id: int, days: list, session_lock: multiprocessing.Lock) -> list:
     logger = py_logging.create_logger(
         "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
