@@ -1,23 +1,32 @@
-import os
-
 import multiprocessing
-from sqlalchemy import create_engine, and_
-from sqlalchemy.orm import sessionmaker
+import numpy as np
 
-import py_logging
 from database.in_database import get_days_for_item
-
-from database_services.session_controller import shared_session
-from database_services.database_objects.item import Item
-from database_services.database_objects.price import Price
-from get_config import get_config
 
 
 def get_points_data_set(item_id: int, data_range: int, session_lock: multiprocessing.Lock) -> list:
     points = [(x[0]//86400000, x[1]) for x in get_days_for_item(item_id, session_lock)]
-    return [get_points_for_day(points, point, data_range) for point in points if
+    return [get_points_for_day(points, point, data_range)[0] for point in points if
             any(point[0] < inner_point[0] <= point[0] + data_range for inner_point in points)
             and len(get_points_for_day(points, point, data_range)) == 7]
+
+
+def get_x_points_data_set(data_set: list) -> np.array:
+    data_points_size = len(data_set[0])
+    data_set_size = len(data_set)
+    training_data_set = data_set[:round(data_set_size * .8)]
+    test_data_set = data_set[round(data_set_size * .8):]
+    return [np.array([data[:data_points_size-1] for data in training_data_set]),
+            np.array([data[:data_points_size-1] for data in test_data_set])]
+
+
+def get_y_points_data_set(data_set: list) -> np.array:
+    data_points_size = len(data_set[0])
+    data_set_size = len(data_set)
+    training_data_set = data_set[:round(data_set_size * .8)]
+    test_data_set = data_set[round(data_set_size * .8):]
+    return [np.array([data[data_points_size - 1:][0] for data in training_data_set]),
+            np.array([data[data_points_size - 1:][0] for data in test_data_set])]
 
 
 def get_points_for_day(points: list, end_point: tuple, data_range: int) -> list:
@@ -26,8 +35,7 @@ def get_points_for_day(points: list, end_point: tuple, data_range: int) -> list:
 
 if __name__ == '__main__':
     lock = multiprocessing.Lock()
-    print([(x[0]//86400000, x[1]) for x in get_days_for_item(554, lock)])
     a_list = get_points_data_set(554, 7, lock)
-    for data in a_list:
-        if not len(data) == 7:
-            print(data)
+    print(a_list[0])
+    print(get_x_points_data_set(a_list)[0])
+    print(get_y_points_data_set(a_list)[0])

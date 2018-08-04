@@ -30,6 +30,7 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
     with runescape_lock:
         # print("Got lock")
         response = requests.get("http://services.runescape.com/m=itemdb_rs/api/graph/{}.json".format(item_id))
+        print(response.text)
         if len(response.text) is 0:
             print("Too many requests")
             time.sleep(60)
@@ -38,10 +39,13 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
             json_response = response.json()
         # time.sleep(5)
     print("Starting to parse the data for {}".format(item_id))
-    list_of_days = list(json_response['daily'].keys())
+    list_of_days = [int(x) for x in json_response['daily'].keys()]
     new_days = determine_new_days(item_id, list_of_days, session_lock)
-    updated_dict = dict((key, value) for key, value in json_response['daily'].items() if int(key) in new_days)
-    list_of_prices = [Price(item_id=item_id, runescape_time=int(key), price=value) for key, value in updated_dict]
+    print("New days: {}".format(new_days))
+    updated_dict = dict((key, value) for key, value in json_response['daily'].items() if key in new_days)
+    print(updated_dict)
+    list_of_prices = [Price(item_id=item_id, runescape_time=int(key), price=value) for key, value in updated_dict.items()]
+    print(list_of_prices)
     add_all_to_database(list_of_prices, session_lock)
 
 
@@ -50,4 +54,5 @@ def get_all_historic_prices(session_lock: multiprocessing.Lock, runescape_lock: 
 
 
 if __name__ == '__main__':
-    processes = get_all_historic_prices(multiprocessing.Lock(), multiprocessing.Lock())
+    get_historic_prices_one_id(1127, multiprocessing.Lock(), multiprocessing.Lock())
+    # processes = get_all_historic_prices(multiprocessing.Lock(), multiprocessing.Lock())

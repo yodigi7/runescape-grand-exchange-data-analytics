@@ -1,9 +1,13 @@
+import multiprocessing
+
 from get_config import get_config
 from bs4 import BeautifulSoup
 import py_logging
 import requests
 import urllib
 import os
+
+from item_services.get_item_from_id import get_item_from_id
 
 
 def get_id_from_name(name: str, setting: str = 'DEFAULT') -> int:
@@ -34,4 +38,4 @@ def get_id_from_name(name: str, setting: str = 'DEFAULT') -> int:
 
 
 if __name__ == '__main__':
-    pass
+    get_item_from_id(get_id_from_name("rune platebody")).add_to_database(multiprocessing.Lock())

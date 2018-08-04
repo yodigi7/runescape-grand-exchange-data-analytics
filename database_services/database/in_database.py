@@ -89,6 +89,7 @@ def determine_new_days(item_id: int, days: list, session_lock: multiprocessing.L
     logger = py_logging.create_logger(
         "get_ids_in_database", '{}in_database.log'.format(os.path.dirname(os.path.realpath(__file__)) + os.sep))
     days_in_database = get_days_in_database(item_id, session_lock)
+    print("Days in database: {}".format(days_in_database))
     return [x for x in days if x not in days_in_database]
 
 

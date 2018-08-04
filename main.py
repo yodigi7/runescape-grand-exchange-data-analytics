@@ -14,7 +14,6 @@ from web_data_services.item_services.add_all_top_price_items import add_all_top_
 from web_data_services.item_services.get_id_from_name import get_id_from_name
 from web_data_services.item_services.get_item_from_id import get_item_from_id
 
-
 # TODO: Delete this whole file or repurpose it
 # This is just to mess around and to make sure that everything works
 
