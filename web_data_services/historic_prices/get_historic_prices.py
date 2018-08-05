@@ -42,9 +42,9 @@ def get_historic_prices_one_id(item_id: int, session_lock: multiprocessing.Lock,
     list_of_days = [int(x) for x in json_response['daily'].keys()]
     new_days = determine_new_days(item_id, list_of_days, session_lock)
     print("New days: {}".format(new_days))
-    updated_dict = dict((key, value) for key, value in json_response['daily'].items() if key in new_days)
+    updated_dict = dict((int(key), value) for key, value in json_response['daily'].items() if int(key) in new_days)
     print(updated_dict)
-    list_of_prices = [Price(item_id=item_id, runescape_time=int(key), price=value) for key, value in updated_dict.items()]
+    list_of_prices = [Price(item_id=item_id, runescape_time=key, price=value) for key, value in updated_dict.items()]
     print(list_of_prices)
     add_all_to_database(list_of_prices, session_lock)
 

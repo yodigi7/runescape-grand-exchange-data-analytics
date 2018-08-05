@@ -1,7 +1,7 @@
 import os
 
 import multiprocessing
-from sqlalchemy import create_engine, and_
+from sqlalchemy import create_engine, and_, or_
 from sqlalchemy.orm import sessionmaker
 
 import py_logging
@@ -59,7 +59,10 @@ def get_singular_ids_in_database(session_lock: multiprocessing.Lock) -> list:
     with session_lock:
         session = shared_session()
         return [x for x in session.query(Item).filter(
-            and_(Item.name is None, Item.type is None, Item.is_members_only is None, Item.description is None))]
+                or_(Item.name == "None",
+                    Item.type == "None",
+                    Item.is_members_only.is_(None),
+                    Item.description == "None"))]
 
 
 def get_ids_in_database(session_lock: multiprocessing.Lock) -> list:
@@ -94,4 +97,4 @@ def determine_new_days(item_id: int, days: list, session_lock: multiprocessing.L
 
 
 if __name__ == '__main__':
-    pass
+    print(get_singular_ids_in_database(multiprocessing.Lock()))

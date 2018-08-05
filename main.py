@@ -39,6 +39,6 @@ def get_names_to_add_to_database():
 if __name__ == '__main__':
     session_lock = multiprocessing.Lock()
     runescape_lock = multiprocessing.Lock()
-    add_all_top_price_items_thread(session_lock, runescape_lock)
+    # add_all_top_price_items_thread(session_lock, runescape_lock)
     clean_singular_items(session_lock)
     get_all_historic_prices(session_lock, runescape_lock)
