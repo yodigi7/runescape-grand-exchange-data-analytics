@@ -1,5 +1,5 @@
 import multiprocessing
-from sklearn import linear_model
+from sklearn_stuff import linear_model
 
 from predict_next_day import get_points_data_set, get_x_points_data_set, get_y_points_data_set
 
