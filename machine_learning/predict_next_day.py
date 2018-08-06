@@ -4,19 +4,7 @@ import numpy as np
 from database.in_database import get_days_for_item
 
 
-def flatten_list(input_list: list) -> list:
-    return [item for sub_list in input_list for item in sub_list]
-
-
-def get_points_data_set(item_id: int, data_range: int, session_lock: multiprocessing.Lock) -> list:
-    points = [(x[0]//86400000, x[1]) for x in get_days_for_item(item_id, session_lock)]
-    return [get_points_for_day(points, point, data_range) for point in points if
-            any(point[0] < inner_point[0] <= point[0] + data_range for inner_point in points)
-            and len(get_points_for_day(points, point, data_range)) == data_range + 1]
-
-
-def get_x_points_data_set(data_set: list) -> np.array:
-    data_points_size = len(data_set[0])
+def get_x_points_data_set(data_set: list) -> list:
     data_set_size = len(data_set)
     training_data_set = data_set[:round(data_set_size * .8)]
     test_data_set = data_set[round(data_set_size * .8):]
@@ -26,8 +14,14 @@ def get_x_points_data_set(data_set: list) -> np.array:
             [data[1:] for data in testing_data_set_holder]]
 
 
-def get_y_points_data_set(data_set: list) -> np.array:
-    data_points_size = len(data_set[0])
+def get_points_data_set(item_id: int, data_range: int, session_lock: multiprocessing.Lock) -> list:
+    points = [(x[0]//86400000, x[1]) for x in get_days_for_item(item_id, session_lock)]
+    return [get_points_for_day(points, point, data_range) for point in points if
+            any(point[0] < inner_point[0] <= point[0] + data_range for inner_point in points)
+            and len(get_points_for_day(points, point, data_range)) == data_range + 1]
+
+
+def get_y_points_data_set(data_set: list) -> list:
     data_set_size = len(data_set)
     training_data_set = data_set[:round(data_set_size * .8)]
     test_data_set = data_set[round(data_set_size * .8):]

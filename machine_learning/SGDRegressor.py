@@ -1,7 +1,7 @@
 import multiprocessing
 from sklearn import linear_model
 
-from get_data_sets import get_points_data_set, get_x_points_data_set, get_y_points_data_set
+from predict_next_day import get_points_data_set, get_x_points_data_set, get_y_points_data_set
 
 if __name__ == '__main__':
     data_set = get_points_data_set(554, 14, multiprocessing.Lock())
