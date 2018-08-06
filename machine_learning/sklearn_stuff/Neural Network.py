@@ -2,8 +2,8 @@ import multiprocessing
 import random
 
 import time
-from sklearn_stuff.neural_network import MLPRegressor
-from sklearn_stuff.metrics import r2_score, mean_squared_error
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import r2_score, mean_squared_error
 
 import predict_min_max_data_range
 import predict_next_day
