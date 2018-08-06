@@ -63,10 +63,10 @@ def test_neural_network_min_max(item_id: int, input_size: int, output_size: int,
     true = [x for x in testing_y_points]
     print("Predicting:   {}".format(predicted))
     print("True:         {}".format(true))
-    print("Mean squared error: {}".format(mean_squared_error(true, predicted)))
     print("R2: {}".format(r2_score(true, predicted)))
+    print("Mean squared error: {}".format(mean_squared_error(true, predicted)))
     print()
 
 
 if __name__ == '__main__':
-    test_neural_network_min_max(556, 7, 3, [7])
+    test_neural_network_min_max(1127, 14, 7, [7])
