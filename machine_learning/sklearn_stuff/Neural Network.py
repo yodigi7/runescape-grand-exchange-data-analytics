@@ -1,4 +1,5 @@
 import multiprocessing
+import pickle
 import random
 
 import time
@@ -39,7 +40,7 @@ def test_neural_network_one_day():
         print()
 
 
-def test_neural_network_min_max(item_id: int, input_size: int, output_size: int, hidden_layers: list) -> None:
+def test_neural_network_min_max(item_id: int, input_size: int, output_size: int, hidden_layers: list) -> MLPRegressor:
     data_set = predict_min_max_data_range.get_points(item_id, input_size, output_size, multiprocessing.Lock())
     mlpregressor = MLPRegressor(solver='lbfgs', hidden_layer_sizes=hidden_layers)
     x_points_data_set = predict_min_max_data_range.get_x_points_data_set(data_set)
@@ -66,7 +67,10 @@ def test_neural_network_min_max(item_id: int, input_size: int, output_size: int,
     print("R2: {}".format(r2_score(true, predicted)))
     print("Mean squared error: {}".format(mean_squared_error(true, predicted)))
     print()
+    return mlpregressor
 
 
 if __name__ == '__main__':
-    test_neural_network_min_max(1127, 14, 7, [7])
+    pickle.dump(test_neural_network_min_max(558, 7, 3, [10]), open("MLPRegressor (554, 14, 7, [14]).sav", 'wb'))
+    mlpregressor = pickle.load(open("MLPRegressor (554, 14, 7, [14]).sav", 'rb'))
+    print(mlpregressor.predict([[57, 54, 51, 48, 46, 46, 47]]))
